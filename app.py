@@ -19,10 +19,12 @@ from flask_cors import CORS, cross_origin
 
 con = mysql.connector.connect(
     host="185.232.14.52",
-    database="u760464709_16005339_bd",
-    user="u760464709_16005339_usr",
-    password="/iJRzrJBz+P1"
+    database="u760464709_23005256_bd",
+    user="u760464709_23005256_usr",
+    password="~6ru!MMJZzX"
 )
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -45,19 +47,19 @@ def app2():
 
     return "<h5>Hola, soy la view app</h5>"
 
-@app.route("/productos")
-def productos():
+@app.route("/clientes")
+def clientes():
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT Id_Producto,
-           Nombre_Producto,
-           Precio,
-           Existencias
+    SELECT idCliente,
+           nombreCliente,
+           telefono,
+           correoElectronico
 
-    FROM productos
+    FROM clientes
 
     LIMIT 10 OFFSET 0
     """
@@ -65,20 +67,10 @@ def productos():
     cursor.execute(sql)
     registros = cursor.fetchall()
 
-    # Si manejas fechas y horas
-    """
-    for registro in registros:
-        fecha_hora = registro["Fecha_Hora"]
+    return render_template("clientes.html", clientes=registros)
 
-        registro["Fecha_Hora"] = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-        registro["Fecha"]      = fecha_hora.strftime("%d/%m/%Y")
-        registro["Hora"]       = fecha_hora.strftime("%H:%M:%S")
-    """
-
-    return render_template("productos.html", productos=registros)
-
-@app.route("/productos/buscar", methods=["GET"])
-def buscarProductos():
+@app.route("/clientes/buscar", methods=["GET"])
+def buscarclientes():
     if not con.is_connected():
         con.reconnect()
 
@@ -88,18 +80,18 @@ def buscarProductos():
     
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT Id_Producto,
-           Nombre_Producto,
-           Precio,
-           Existencias
+    SELECT idCliente,
+           nombreCliente,
+           telefono,
+           correoElectronico
 
-    FROM productos
+    FROM clientes
 
-    WHERE Nombre_Producto LIKE %s
-    OR    Precio          LIKE %s
-    OR    Existencias     LIKE %s
+    WHERE nombreCliente LIKE %s
+    OR    telefono          LIKE %s
+    OR    correoElectronico     LIKE %s
 
-    ORDER BY Id_Producto DESC
+    ORDER BY idCliente DESC
 
     LIMIT 10 OFFSET 0
     """
@@ -108,16 +100,6 @@ def buscarProductos():
     try:
         cursor.execute(sql, val)
         registros = cursor.fetchall()
-
-        # Si manejas fechas y horas
-        """
-        for registro in registros:
-            fecha_hora = registro["Fecha_Hora"]
-
-            registro["Fecha_Hora"] = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-            registro["Fecha"]      = fecha_hora.strftime("%d/%m/%Y")
-            registro["Hora"]       = fecha_hora.strftime("%H:%M:%S")
-        """
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
@@ -128,7 +110,7 @@ def buscarProductos():
 
     return make_response(jsonify(registros))
 
-@app.route("/producto", methods=["POST"])
+@app.route("/clientes", methods=["POST"])
 # Usar cuando solo se quiera usar CORS en rutas específicas
 # @cross_origin()
 def guardarProducto():
@@ -137,29 +119,29 @@ def guardarProducto():
 
     id          = request.form["id"]
     nombre      = request.form["nombre"]
-    precio      = request.form["precio"]
-    existencias = request.form["existencias"]
+    telefono      = request.form["telefono"]
+    correoElectronico = request.form["correoElectronico"]
     # fechahora   = datetime.datetime.now(pytz.timezone("America/Matamoros"))
     
     cursor = con.cursor()
 
     if id:
         sql = """
-        UPDATE productos
+        UPDATE clientes
 
-        SET Nombre_Producto = %s,
-            Precio          = %s,
-            Existencias     = %s
+        SET nombreCliente = %s,
+            telefono          = %s,
+            correoElectronico     = %s
 
-        WHERE Id_Producto = %s
+        WHERE idCliente = %s
         """
-        val = (nombre, precio, existencias, id)
+        val = (nombre, telefono, correoElectronico, id)
     else:
         sql = """
-        INSERT INTO productos (Nombre_Producto, Precio, Existencias)
+        INSERT INTO clientes (nombreCliente, telefono, correoElectronico)
                     VALUES    (%s,          %s,      %s)
         """
-        val =                 (nombre, precio, existencias)
+        val =                 (nombre, telefono, correoElectronico)
     
     cursor.execute(sql, val)
     con.commit()
@@ -167,18 +149,18 @@ def guardarProducto():
 
     return make_response(jsonify({}))
 
-@app.route("/producto/<int:id>")
-def editarProducto(id):
+@app.route("/clientes/<int:id>")
+def editarclientes(id):
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT Id_Producto, Nombre_Producto, Precio, Existencias
+    SELECT idCliente, nombreCliente, telefono, correoElectronico
 
-    FROM productos
+    FROM clientes
 
-    WHERE Id_Producto = %s
+    WHERE idCliente = %s
     """
     val    = (id,)
 
@@ -188,7 +170,7 @@ def editarProducto(id):
 
     return make_response(jsonify(registros))
 
-@app.route("/producto/eliminar", methods=["POST"])
+@app.route("/clientes/eliminar", methods=["POST"])
 def eliminarProducto():
     if not con.is_connected():
         con.reconnect()
@@ -197,8 +179,8 @@ def eliminarProducto():
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    DELETE FROM productos
-    WHERE Id_Producto = %s
+    DELETE FROM clientes
+    WHERE idcliente = %s
     """
     val    = (id,)
 
