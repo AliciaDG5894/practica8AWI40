@@ -110,10 +110,10 @@ def buscarclientes():
 
     return make_response(jsonify(registros))
 
-@app.route("/clientes", methods=["POST"])
+@app.route("/cliente", methods=["POST"])
 # Usar cuando solo se quiera usar CORS en rutas específicas
 # @cross_origin()
-def guardarProducto():
+def guardarcliente():
     if not con.is_connected():
         con.reconnect()
 
@@ -149,8 +149,8 @@ def guardarProducto():
 
     return make_response(jsonify({}))
 
-@app.route("/clientes/<int:id>")
-def editarclientes(id):
+@app.route("/cliente/<int:id>")
+def editarcliente(id):
     if not con.is_connected():
         con.reconnect()
 
@@ -170,8 +170,8 @@ def editarclientes(id):
 
     return make_response(jsonify(registros))
 
-@app.route("/clientes/eliminar", methods=["POST"])
-def eliminarProducto():
+@app.route("/cliente/eliminar", methods=["POST"])
+def eliminarcliente():
     if not con.is_connected():
         con.reconnect()
 
