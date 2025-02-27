@@ -1,4 +1,3 @@
-<!-- cambiar la consistencia  -->
 <table class="table table-sm">
     <thead class="table-active">
         <tr>
@@ -10,13 +9,13 @@
         </tr>
     </thead>
     <tbody>
-        <!-- ng-repeat, solo cambiar el nombre  -->
-        <tr ng-repeat="x in clientes">
-            <td scope="col">{{ x.idCliente }}</td>
-            <td scope="col">{{ x.nombreCliente }}</td>
-            <td scope="col">{{ x.telefono }}</td>
-            <td scope="col">{{ x.correoElectronico }}</td>
-            <td scope="col"></td>
+        {% for cliente in clientes %}
+        <tr>
+            <td>{{ cliente.idCliente }}</td>
+            <td>{{ cliente.nombreCliente }}</td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.correoElectronico }}</td>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
